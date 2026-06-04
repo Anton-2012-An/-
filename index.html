@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Книжная Мастерская | Админ-панель</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+        }
+        body {
+            background: linear-gradient(145deg, #f5f0e8 0%, #e8e2d8 100%);
+            min-height: 100vh;
+            padding: 1.5rem;
+        }
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .main-header {
+            background: white;
+            border-radius: 2rem;
+            padding: 0.8rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        }
+        .logo h1 {
+            font-size: 1.7rem;
+            background: linear-gradient(135deg, #b8860b, #daa520);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .nav-links {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+        .nav-btn {
+            background: transparent;
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.9rem;
+        }
+        .nav-btn.active {
+            background: #b8860b;
+            color: white;
+        }
+        .vip-badge {
+            background: linear-gradient(135deg, #ffd966, #ffb347);
+            padding: 0.2rem 0.8rem;
+            border-radius: 2rem;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: #4a2e00;
+        }
+        .section {
+            background: white;
+            border-radius: 1.8rem;
+            padding: 1.5rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 18px rgba(0,0,0,0.04);
+        }
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.3rem;
+            border-left: 5px solid #daa520;
+            padding-left: 1rem;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        label {
+            font-weight: 600;
+            font-size: 0.8rem;
+            display: block;
+            margin-bottom: 0.3rem;
+            color: #5a4a2e;
+        }
+        input, textarea, select {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border-radius: 1rem;
+            border: 1px solid #e2cfb3;
+            background: white;
+        }
+        button {
+            background: #b8860b;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        button:hover { background: #9a6e08; transform: translateY(-1px); }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #b8860b;
+            color: #b8860b;
+        }
+        .btn-danger {
+            background: #9e5a3a;
+        }
+        .rules-box {
+            background: #fef9ef;
+            border-radius: 1rem;
+            padding: 1rem;
+            margin: 1rem 0;
+            border: 1px solid #f0dbb4;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .agree-check {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin: 1rem 0;
+        }
+        .support-ticket {
+            background: #faf6ef;
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 1.5rem;
+        }
+        .book-card {
+            background: #fefcf7;
+            border-radius: 1.5rem;
+            padding: 1rem;
+            border: 1px solid #eee0cc;
+        }
+        .vip-book-card {
+            border: 2px solid #ffd700;
+            background: linear-gradient(145deg, #fff9ef, #fff5e6);
+        }
+        .flex-btns { display: flex; gap: 0.6rem; flex-wrap: wrap; margin-top: 0.6rem; }
+        .glowing-text { color: #b8860b; font-weight: bold; }
+        .payment-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        .payment-card {
+            background: white;
+            border-radius: 2rem;
+            padding: 2rem;
+            max-width: 450px;
+            width: 90%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        .permission-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin: 0.3rem 0;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #b8860b;
+        }
+        input:checked + .slider:before {
+            transform: translateX(20px);
+        }
+        @media (max-width: 700px) { body { padding: 1rem; } .section { padding: 1rem; } }
+    </style>
+</head>
+<body>
+<div class="app-container" id="appRoot"></div>
+<script>
+    // ======================== ДАННЫЕ (ТОЛЬКО АДМИН) ========================
+    let users = [];            
+    let books = [];
+    let moderatorRequests = [];
+    let supportTickets = [];   
+    let currentUserId = null;
+    let pendingPurchasePlan = null;
+
+    // Права модераторов
+    const defaultModPermissions = {
+        canManageModRequests: true,
+        canApproveRejectBooks: true,
+        canViewAllBooks: true,
+        canPublishBooks: true,
+        canViewHistory: true
+    };
+
+    function loadData() {
+        // Полностью очищаем все данные, кроме админа
+        const storedUsers = JSON.parse(localStorage.getItem('vip_users_data') || '[]');
+        const storedBooks = JSON.parse(localStorage.getItem('vip_books_data') || '[]');
+        const storedModRequests = JSON.parse(localStorage.getItem('vip_mod_requests') || '[]');
+        const storedSupportTickets = JSON.parse(localStorage.getItem('support_tickets') || '[]');
+        
+        // Оставляем только админа (email: s9531357@gmail.com)
+        let adminUser = storedUsers.find(u => u.email === 's9531357@gmail.com');
+        if (!adminUser) {
+            adminUser = {
+                id: 'admin_anton_anurin',
+                email: 's9531357@gmail.com',
+                firstName: 'Антон',
+                lastName: 'Анурин',
+                middleName: 'Максимович',
+                age: 28,
+                role: 'admin',
+                vipUntil: null,
+                password: '31441537',
+                permissions: { ...defaultModPermissions, canManageModRequests: true, canApproveRejectBooks: true, canViewAllBooks: true, canPublishBooks: true, canViewHistory: true }
+            };
+        } else {
+            adminUser.role = 'admin';
+            adminUser.password = '31441537';
+            if (!adminUser.permissions) adminUser.permissions = { ...defaultModPermissions, canManageModRequests: true, canApproveRejectBooks: true, canViewAllBooks: true, canPublishBooks: true, canViewHistory: true };
+        }
+        
+        // Удаляем все аккаунты, кроме админа
+        users = [adminUser];
+        
+        // Очищаем все книги, заявки и тикеты (чтобы не было чужого контента)
+        books = [];
+        moderatorRequests = [];
+        supportTickets = [];
+        
+        // Сохраняем очищенные данные
+        saveUsers();
+        saveBooks();
+        saveModRequests();
+        saveSupportTickets();
+        
+        currentUserId = localStorage.getItem('vip_currentUserId');
+        // Если текущий пользователь не админ - выходим
+        if (currentUserId && currentUserId !== adminUser.id) {
+            currentUserId = null;
+            saveCurrentUser();
+        }
+        if (!currentUserId) currentUserId = null;
+    }
+    
+    function saveUsers() { localStorage.setItem('vip_users_data', JSON.stringify(users)); }
+    function saveBooks() { localStorage.setItem('vip_books_data', JSON.stringify(books)); }
+    function saveModRequests() { localStorage.setItem('vip_mod_requests', JSON.stringify(moderatorRequests)); }
+    function saveSupportTickets() { localStorage.setItem('support_tickets', JSON.stringify(supportTickets)); }
+    function saveCurrentUser() { localStorage.setItem('vip_currentUserId', currentUserId); }
+
+    function currentUser() { return users.find(u => u.id === currentUserId) || null; }
+    function isAdmin() { return currentUser()?.role === 'admin'; }
+    function isModerator() { 
+        const user = currentUser();
+        if (!user) return false;
+        if (user.role === 'admin') return true;
+        return user.role === 'moderator';
+    }
+    function hasPermission(permissionName) {
+        const user = currentUser();
+        if (!user) return false;
+        if (user.role === 'admin') return true;
+        if (user.role === 'moderator' && user.permissions) return user.permissions[permissionName] === true;
+        return false;
+    }
+    function isVIP(user) { return user && user.vipUntil && new Date(user.vipUntil) > new Date(); }
+
+    // ======================== РЕГИСТРАЦИЯ С ПРАВИЛАМИ ========================
+    let registrationData = null;
+    function showRulesModal(regData) {
+        registrationData = regData;
+        const modal = document.createElement('div');
+        modal.className = 'payment-modal';
+        modal.innerHTML = `
+            <div class="payment-card">
+                <h3 style="margin-bottom:1rem;">📜 Правила проекта</h3>
+                <div class="rules-box">
+                    <p><strong>1.</strong> Вы — человек, достигший <strong>12 лет</strong> и обязуетесь писать хорошие, качественные книги, которые будут в дальнейшем читать другие люди.</p>
+                    <p><strong>2.</strong> Нажимая на галочку, вы соглашаетесь со всеми правилами сайта и при нарушении не имеете претензий, берёте на себя ответственность за свои действия.</p>
+                    <p><strong>3.</strong> Я <strong>ОБЯЗУЮСЬ</strong> писать книги без нецензурной брани, порнографических сцен и материалов, нарушающих законодательство.</p>
+                    <p><strong>4.</strong> В поддержку я пишу только по теме. В случае, если нашёл недочёт или неработающую позицию, обязуюсь сообщить в поддержку конструктивно.</p>
+                    <p><strong>5.</strong> Я <strong>НЕ взламываю</strong> аккаунты, не пытаюсь получить несанкционированный доступ и уважаю чужой труд.</p>
+                    <p><strong>6.</strong> Я обязуюсь уважать других авторов и читателей, не разжигать конфликты и не нарушать атмосферу творчества.</p>
+                    <p><strong>7.</strong> Я понимаю, что платформа оставляет за собой право модерировать контент и блокировать нарушителей.</p>
+                </div>
+                <div class="agree-check">
+                    <input type="checkbox" id="agreeRulesCheckbox">
+                    <label for="agreeRulesCheckbox" style="margin:0; font-size:0.85rem;">Я прочитал(а) и соглашаюсь со всеми правилами</label>
+                </div>
+                <div class="flex-btns">
+                    <button id="confirmRegisterBtn">✅ Подтвердить регистрацию</button>
+                    <button id="cancelRegisterBtn" class="btn-outline">Отмена</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        document.getElementById('confirmRegisterBtn').addEventListener('click', () => {
+            const agreed = document.getElementById('agreeRulesCheckbox').checked;
+            if (!agreed) { alert('Необходимо принять правила проекта'); return; }
+            const result = register(registrationData.email, registrationData.firstName, registrationData.lastName, registrationData.middleName, registrationData.age, registrationData.password);
+            modal.remove();
+            if (result.success) {
+                alert('Добро пожаловать! Теперь вы можете писать книги.');
+                renderApp();
+            } else {
+                alert(result.error);
+            }
+            registrationData = null;
+        });
+        document.getElementById('cancelRegisterBtn').addEventListener('click', () => { modal.remove(); registrationData = null; });
+    }
+
+    function register(email, firstName, lastName, middleName, age, password) {
+        if (users.find(u => u.email === email)) return { success: false, error: 'Email уже существует' };
+        if (age < 12) return { success: false, error: 'Вам должно быть не менее 12 лет' };
+        const newUser = { 
+            id: Date.now() + '_' + Math.random().toString(36).substr(2,6), 
+            email, firstName, lastName, middleName, age: parseInt(age), 
+            role: 'user', vipUntil: null, password: password 
+        };
+        users.push(newUser);
+        saveUsers();
+        currentUserId = newUser.id;
+        saveCurrentUser();
+        return { success: true };
+    }
+    
+    function login(email, password) {
+        const user = users.find(u => u.email === email);
+        if (!user) return { success: false, error: 'Пользователь не найден' };
+        if (user.password && user.password !== password) return { success: false, error: 'Неверный пароль' };
+        currentUserId = user.id;
+        saveCurrentUser();
+        return { success: true };
+    }
+    
+    function logout() { currentUserId = null; saveCurrentUser(); renderApp(); }
+
+    // ======================== ПОДДЕРЖКА ========================
+    function createSupportTicket(subject, message) {
+        const user = currentUser();
+        if (!user) return false;
+        const newTicket = {
+            id: Date.now() + '_ticket',
+            userId: user.id,
+            userEmail: user.email,
+            subject: subject,
+            message: message,
+            status: 'open',
+            createdAt: new Date().toISOString(),
+            reply: null,
+            replyAt: null
+        };
+        supportTickets.unshift(newTicket);
+        saveSupportTickets();
+        return true;
+    }
+    
+    function replyToTicket(ticketId, replyText) {
+        if (!isAdmin()) return false;
+        const ticket = supportTickets.find(t => t.id === ticketId);
+        if (ticket) {
+            ticket.reply = replyText;
+            ticket.replyAt = new Date().toISOString();
+            ticket.status = 'answered';
+            saveSupportTickets();
+            return true;
+        }
+        return false;
+    }
+    
+    function getUserTickets() {
+        const user = currentUser();
+        if (!user) return [];
+        if (isAdmin()) return supportTickets;
+        return supportTickets.filter(t => t.userId === user.id);
+    }
+
+    // ======================== VIP ПОДПИСКА ========================
+    const vipPlans = [
+        { name: '1 неделя', days: 7, price: 1, perks: ['⭐ Приоритет модерации', '🤖 Нейросеть', '👑 Золотая рамка'] },
+        { name: '1 месяц', days: 30, price: 3, perks: ['⭐ Приоритет модерации', '🤖 Нейросеть', '👑 Золотая рамка'] },
+        { name: '3 месяца', days: 90, price: 5, perks: ['⭐ Приоритет модерации', '🤖 Нейросеть', '👑 Золотая рамка'] },
+        { name: '6 месяцев', days: 180, price: 7, perks: ['⭐ Приоритет модерации', '🤖 Нейросеть', '👑 Золотая рамка'] },
+        { name: '1 год', days: 365, price: 10, perks: ['⭐ Приоритет модерации', '🤖 Нейросеть', '👑 Золотая рамка'] }
+    ];
+    
+    function processPayment(planIndex, cardData) {
+        const cardNumber = cardData.number.replace(/\s/g, '');
+        const isValid = (cardNumber === '4242424242424242' || cardNumber === '4242 4242 4242 4242') && cardData.expiry === '12/28' && cardData.cvv === '123';
+        if (!isValid) return { success: false, error: 'Ошибка оплаты. Тестовая карта: 4242 4242 4242 4242, 12/28, 123' };
+        const user = currentUser();
+        if (!user) return { success: false, error: 'Пользователь не найден' };
+        const plan = vipPlans[planIndex];
+        const now = new Date();
+        let currentUntil = user.vipUntil ? new Date(user.vipUntil) : now;
+        if (currentUntil < now) currentUntil = now;
+        const newUntil = new Date(currentUntil.getTime() + plan.days * 86400000);
+        user.vipUntil = newUntil.toISOString();
+        saveUsers();
+        return { success: true, message: `VIP статус активирован до ${newUntil.toLocaleDateString()}` };
+    }
+    
+    function showPaymentModal(planIndex) {
+        pendingPurchasePlan = planIndex;
+        const modal = document.createElement('div');
+        modal.className = 'payment-modal';
+        modal.innerHTML = `
+            <div class="payment-card">
+                <h3>Оплата "${vipPlans[planIndex].name}"</h3>
+                <p>Сумма: ${vipPlans[planIndex].price} бел. руб</p>
+                <div class="form-group"><label>Номер карты</label><input id="cardNumber" placeholder="4242 4242 4242 4242"></div>
+                <div class="form-group"><label>Срок (ММ/ГГ)</label><input id="cardExpiry" placeholder="12/28"></div>
+                <div class="form-group"><label>CVV</label><input type="password" id="cardCvv" placeholder="123"></div>
+                <div class="flex-btns"><button id="confirmPaymentBtn">Оплатить</button><button id="cancelPaymentBtn" class="btn-outline">Отмена</button></div>
+                <p style="font-size:0.7rem;margin-top:1rem;">💳 Тест: 4242 4242 4242 4242, 12/28, 123</p>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        document.getElementById('confirmPaymentBtn').addEventListener('click', () => {
+            const result = processPayment(planIndex, { number: document.getElementById('cardNumber').value, expiry: document.getElementById('cardExpiry').value, cvv: document.getElementById('cardCvv').value });
+            modal.remove();
+            alert(result.success ? result.message : result.error);
+            if (result.success) renderApp();
+        });
+        document.getElementById('cancelPaymentBtn').addEventListener('click', () => { modal.remove(); });
+    }
+
+    // ======================== ЗАЯВКИ НА МОДЕРАТОРА ========================
+    function requestModeratorRole(userId, reason) {
+        const user = users.find(u => u.id === userId);
+        if (!user || user.role !== 'user') return false;
+        if (moderatorRequests.some(r => r.userId === userId && r.status === 'pending')) return false;
+        const newReq = { id: Date.now() + '_modreq', userId, userEmail: user.email, fullName: `${user.lastName} ${user.firstName} ${user.middleName}`, reason: reason || 'Хочу стать модератором', status: 'pending', rejectedReason: null, createdAt: new Date().toISOString() };
+        moderatorRequests.push(newReq);
+        saveModRequests();
+        return true;
+    }
+    
+    function resolveModeratorRequest(requestId, approve, rejectReason = null) {
+        if (!hasPermission('canManageModRequests')) { alert('У вас нет права управлять заявками на модераторство'); return false; }
+        const req = moderatorRequests.find(r => r.id === requestId);
+        if (!req) return false;
+        if (approve) {
+            req.status = 'approved';
+            const user = users.find(u => u.id === req.userId);
+            if (user) { 
+                user.role = 'moderator'; 
+                user.permissions = { ...defaultModPermissions };
+                saveUsers(); 
+            }
+        } else {
+            req.status = 'rejected';
+            req.rejectedReason = rejectReason;
+        }
+        saveModRequests();
+        return true;
+    }
+
+    // ======================== КНИГИ И МОДЕРАЦИЯ ========================
+    function submitBookForModeration(bookData) {
+        const user = currentUser();
+        if (!user) return false;
+        const newBook = { 
+            id: Date.now() + '_bk' + Math.random().toString(36).substr(2,5), 
+            title: bookData.title, 
+            description: bookData.description, 
+            content: bookData.content, 
+            authorId: user.id, 
+            status: 'pending', 
+            rejectionReason: null, 
+            correctionDeadline: null, 
+            correctionNote: null, 
+            publishedAt: null, 
+            createdAt: new Date().toISOString(), 
+            isVIPAuthor: isVIP(user)
+        };
+        books.push(newBook);
+        saveBooks();
+        return true;
+    }
+    
+    function getPendingBooksWithPriority() {
+        const pending = books.filter(b => b.status === 'pending');
+        return pending.sort((a, b) => {
+            const aVIP = a.isVIPAuthor || (users.find(u => u.id === a.authorId) && isVIP(users.find(u => u.id === a.authorId)));
+            const bVIP = b.isVIPAuthor || (users.find(u => u.id === b.authorId) && isVIP(users.find(u => u.id === b.authorId)));
+            if (aVIP && !bVIP) return -1;
+            if (!aVIP && bVIP) return 1;
+            return new Date(b.createdAt) - new Date(a.createdAt);
+        });
+    }
+
+    function approveBook(bookId) {
+        if (!hasPermission('canApproveRejectBooks') || !hasPermission('canPublishBooks')) { alert('У вас нет права одобрять книги'); return; }
+        const book = books.find(b => b.id === bookId);
+        if (book) { book.status = 'approved'; book.publishedAt = new Date().toISOString(); saveBooks(); }
+    }
+    
+    function rejectBook(bookId, reason, deadline, fixNote) {
+        if (!hasPermission('canApproveRejectBooks')) { alert('У вас нет права отклонять книги'); return; }
+        const book = books.find(b => b.id === bookId);
+        if (book) { book.status = 'rejected'; book.rejectionReason = reason; book.correctionDeadline = deadline; book.correctionNote = fixNote; saveBooks(); }
+    }
+    
+    function editRejectedBook(bookId, newTitle, newDesc, newContent) {
+        const book = books.find(b => b.id === bookId);
+        if (book && book.status === 'rejected' && book.authorId === currentUser()?.id) {
+            Object.assign(book, { title: newTitle, description: newDesc, content: newContent, status: 'pending', rejectionReason: null, correctionDeadline: null, correctionNote: null });
+            const user = currentUser();
+            if (user) book.isVIPAuthor = isVIP(user);
+            saveBooks();
+            return true;
+        }
+        return false;
+    }
+    
+    function deleteMyBook(bookId) {
+        const book = books.find(b => b.id === bookId);
+        if (book && book.authorId === currentUser()?.id && book.status !== 'approved') {
+            books = books.filter(b => b.id !== bookId);
+            saveBooks();
+            return true;
+        }
+        return false;
+    }
+    
+    function getPublishedBooks() { return books.filter(b => b.status === 'approved'); }
+    function getUserBooks(userId) { return books.filter(b => b.authorId === userId); }
+    function getPendingModeratorRequests() { return hasPermission('canManageModRequests') ? moderatorRequests.filter(r => r.status === 'pending') : []; }
+
+    // ======================== НЕЙРОСЕТЬ ========================
+    function generateAIBookIdea(genre, keywords) {
+        const ideas = { 
+            'Фэнтези': ['Древнее пророчество о семи печатях', 'Меч, способный говорить с тенями', 'Падение последнего дракона'], 
+            'Научная фантастика': ['Колонизация океана на Венере', 'ИИ, который начал писать стихи', 'Путешествие сквозь кротовую нору'], 
+            'Детектив': ['Загадка старинного особняка', 'Пропавший артефакт', 'Смерть на закрытом острове'], 
+            'Роман': ['Любовь между мирами', 'Встреча после двадцати лет', 'Секретное письмо'], 
+            'Поэзия': ['Городские рассветы', 'Элегии о времени', 'Осенние ритмы'] 
+        };
+        const genreList = ideas[genre] || ideas['Роман'];
+        return `✨ Идея (${genre})${keywords ? ` на тему "${keywords}"` : ''}: ${genreList[Math.floor(Math.random() * genreList.length)]}. Начните с сильного абзаца!`;
+    }
+
+    // ======================== РЕНДЕР ========================
+    let currentTab = 'write';
+
+    function renderApp() {
+        const user = currentUser();
+        const isMod = isModerator();
+        const isAdm = isAdmin();
+        const root = document.getElementById('appRoot');
+        let navHtml = `
+            <div class="main-header">
+                <div class="logo"><h1>📚 Книжная Мастерская</h1></div>
+                <div class="nav-links">
+                    ${user ? `<button class="nav-btn ${currentTab === 'write' ? 'active' : ''}" data-tab="write">✍️ Написать книгу</button>
+                    <button class="nav-btn ${currentTab === 'myBooks' ? 'active' : ''}" data-tab="myBooks">📖 Мои книги</button>
+                    <button class="nav-btn ${currentTab === 'published' ? 'active' : ''}" data-tab="published">🌟 Опубликованные</button>
+                    <button class="nav-btn ${currentTab === 'vip' ? 'active' : ''}" data-tab="vip">💎 VIP</button>
+                    ${isMod && hasPermission('canViewAllBooks') ? `<button class="nav-btn ${currentTab === 'moderation' ? 'active' : ''}" data-tab="moderation">⚖️ Модерация</button>` : ''}
+                    <button class="nav-btn ${currentTab === 'support' ? 'active' : ''}" data-tab="support">🛟 Поддержка</button>
+                    ${isAdm ? `<button class="nav-btn ${currentTab === 'adminPanel' ? 'active' : ''}" data-tab="adminPanel">👑 Админ-панель</button>` : ''}
+                    <button class="nav-btn ${currentTab === 'account' ? 'active' : ''}" data-tab="account">👤 Аккаунт</button>` : `<button class="nav-btn ${currentTab === 'login' ? 'active' : ''}" data-tab="login">🔐 Вход</button>`}
+                </div>
+                <div class="user-chip">${user ? `${user.firstName} ${user.lastName} ${isVIP(user) ? '<span class="vip-badge">VIP</span>' : ''} (${user.role})` : 'Гость'}</div>
+            </div>
+        `;
+        let content = '';
+        if (!user) content = renderAuthPage();
+        else {
+            if (currentTab === 'write') content = renderWriteBook();
+            else if (currentTab === 'myBooks') content = renderMyBooks();
+            else if (currentTab === 'published') content = renderPublishedBooks();
+            else if (currentTab === 'vip') content = renderVipShop();
+            else if (currentTab === 'moderation' && isMod && hasPermission('canViewAllBooks')) content = renderModerationPanel();
+            else if (currentTab === 'support') content = renderSupportPage();
+            else if (currentTab === 'account') content = renderAccount();
+            else if (currentTab === 'adminPanel' && isAdm) content = renderAdminPanel();
+            else content = '<div class="section">Доступ запрещён</div>';
+        }
+        root.innerHTML = navHtml + content;
+        attachEvents();
+    }
+
+    function attachEvents() {
+        document.querySelectorAll('.nav-btn').forEach(btn => btn.addEventListener('click', () => { currentTab = btn.getAttribute('data-tab'); renderApp(); }));
+        
+        document.getElementById('submitBookForm')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            submitBookForModeration({ title: document.getElementById('bkTitle').value, description: document.getElementById('bkDesc').value, content: document.getElementById('bkContent').value });
+            alert('Книга отправлена на модерацию');
+            renderApp();
+        });
+        
+        document.querySelectorAll('.approve-book').forEach(btn => btn.addEventListener('click', () => { approveBook(btn.getAttribute('data-id')); renderApp(); }));
+        document.querySelectorAll('.reject-book').forEach(btn => btn.addEventListener('click', () => {
+            const id = btn.getAttribute('data-id');
+            let reason = prompt('Причина отказа:'); if (!reason) return;
+            let deadline = prompt('Срок исправления:'); let fixNote = prompt('Что исправить:');
+            rejectBook(id, reason, deadline || '—', fixNote || '—'); renderApp();
+        }));
+        document.querySelectorAll('.edit-rejected-book').forEach(btn => btn.addEventListener('click', () => {
+            const id = btn.getAttribute('data-id'); const book = books.find(b => b.id === id);
+            if (book) editRejectedBook(id, prompt('Название', book.title), prompt('Описание', book.description), prompt('Текст', book.content));
+            renderApp();
+        }));
+        document.querySelectorAll('.delete-my-book').forEach(btn => btn.addEventListener('click', () => { deleteMyBook(btn.getAttribute('data-id')); renderApp(); }));
+        document.querySelectorAll('.buy-vip-btn').forEach(btn => btn.addEventListener('click', () => showPaymentModal(parseInt(btn.getAttribute('data-plan')))));
+        
+        document.getElementById('requestModeratorBtn')?.addEventListener('click', () => { requestModeratorRole(currentUser().id, prompt('Почему вы хотите стать модератором?')); alert('Заявка отправлена'); renderApp(); });
+        document.querySelectorAll('.approve-mod-req').forEach(btn => btn.addEventListener('click', () => { resolveModeratorRequest(btn.getAttribute('data-id'), true, null); renderApp(); }));
+        document.querySelectorAll('.reject-mod-req').forEach(btn => btn.addEventListener('click', () => { const reason = prompt('Причина отказа:'); if(reason) resolveModeratorRequest(btn.getAttribute('data-id'), false, reason); renderApp(); }));
+        
+        document.getElementById('loginFormId')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const res = login(document.getElementById('loginEmail').value, document.getElementById('loginPassword').value);
+            if (res.success) renderApp(); else alert(res.error);
+        });
+        
+        document.getElementById('regFormId')?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('regEmail').value;
+            const firstName = document.getElementById('regFirstName').value;
+            const lastName = document.getElementById('regLastName').value;
+            const middleName = document.getElementById('regMiddleName').value;
+            const age = parseInt(document.getElementById('regAge').value);
+            const password = document.getElementById('regPassword').value;
+            if (!email || !firstName || !lastName || !middleName || !age || !password) return alert('Все поля обязательны');
+            showRulesModal({ email, firstName, lastName, middleName, age, password });
+        });
+        
+        document.getElementById('logoutBtn')?.addEventListener('click', () => logout());
+        document.getElementById('generateAIButton')?.addEventListener('click', () => {
+            document.getElementById('aiResult').innerHTML = `<div class="ai-assist" style="background:#f4efe6;border-radius:1rem;padding:1rem;margin-top:1rem;">🤖 ${generateAIBookIdea(document.getElementById('aiGenre').value, document.getElementById('aiKeywords').value)}</div>`;
+        });
+        
+        document.getElementById('createTicketBtn')?.addEventListener('click', () => {
+            const subject = document.getElementById('ticketSubject').value.trim();
+            const message = document.getElementById('ticketMessage').value.trim();
+            if (!subject || !message) { alert('Заполните тему и сообщение'); return; }
+            createSupportTicket(subject, message);
+            alert('Обращение отправлено в поддержку');
+            document.getElementById('ticketSubject').value = '';
+            document.getElementById('ticketMessage').value = '';
+            renderApp();
+        });
+        
+        document.querySelectorAll('.reply-ticket-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const ticketId = btn.getAttribute('data-id');
+                const replyText = prompt('Введите ответ на обращение:');
+                if (replyText) { replyToTicket(ticketId, replyText); renderApp(); }
+            });
+        });
+        
+        document.querySelectorAll('.save-permissions-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const modId = btn.getAttribute('data-id');
+                const permissions = {
+                    canManageModRequests: document.getElementById(`perm_modreq_${modId}`)?.checked || false,
+                    canApproveRejectBooks: document.getElementById(`perm_approve_${modId}`)?.checked || false,
+                    canViewAllBooks: document.getElementById(`perm_view_${modId}`)?.checked || false,
+                    canPublishBooks: document.getElementById(`perm_publish_${modId}`)?.checked || false,
+                    canViewHistory: document.getElementById(`perm_history_${modId}`)?.checked || false
+                };
+                const moderator = users.find(u => u.id === modId);
+                if (moderator && moderator.role === 'moderator') {
+                    moderator.permissions = { ...moderator.permissions, ...permissions };
+                    saveUsers();
+                    alert('Права обновлены');
+                    renderApp();
+                }
+            });
+        });
+        
+        document.querySelectorAll('.remove-moderator-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                if(confirm('Лишить роли модератора?')) {
+                    const userId = btn.getAttribute('data-id');
+                    const user = users.find(u => u.id === userId);
+                    if (user && user.role === 'moderator') {
+                        user.role = 'user';
+                        delete user.permissions;
+                        saveUsers();
+                        renderApp();
+                    }
+                }
+            });
+        });
+    }
+
+    // ======================== СТРАНИЦЫ ========================
+    function renderAuthPage() {
+        return `<div class="section"><div class="section-title">🔐 Вход / Регистрация</div>
+        <form id="loginFormId"><div class="form-group"><label>Email</label><input id="loginEmail" required></div><div class="form-group"><label>Пароль</label><input type="password" id="loginPassword" required></div><button type="submit">Войти</button></form><hr>
+        <form id="regFormId"><div class="form-group"><label>Email</label><input id="regEmail" required></div><div class="form-group"><label>Имя</label><input id="regFirstName" required></div>
+        <div class="form-group"><label>Фамилия</label><input id="regLastName" required></div><div class="form-group"><label>Отчество</label><input id="regMiddleName" required></div>
+        <div class="form-group"><label>Возраст</label><input type="number" id="regAge" required></div><div class="form-group"><label>Пароль</label><input type="password" id="regPassword" required></div>
+        <button type="submit">Зарегистрироваться</button></form></div>`;
+    }
+    
+    function renderWriteBook() {
+        const hasAI = isVIP(currentUser());
+        return `<div class="section"><div class="section-title">📝 Написать книгу</div><form id="submitBookForm"><div class="form-group"><label>Название</label><input id="bkTitle" required></div>
+        <div class="form-group"><label>Описание</label><textarea id="bkDesc" rows="3"></textarea></div><div class="form-group"><label>Текст</label><textarea id="bkContent" rows="10"></textarea></div>
+        <button type="submit">Отправить на модерацию</button></form>
+        ${hasAI ? `<div class="ai-assist" style="background:#f4efe6;border-radius:1rem;padding:1rem;margin-top:1rem;"><strong>🤖 VIP Нейросеть</strong><br><select id="aiGenre"><option>Фэнтези</option><option>Научная фантастика</option><option>Детектив</option><option>Роман</option><option>Поэзия</option></select>
+        <input id="aiKeywords" placeholder="Ключевые слова" style="margin-top:0.5rem;"><button id="generateAIButton" class="btn-outline" style="margin-top:0.5rem;">✨ Сгенерировать идею</button><div id="aiResult"></div></div>` : '<p class="glowing-text" style="margin-top:1rem;">🌟 Купите VIP для доступа к нейросети и приоритетной модерации!</p>'}</div>`;
+    }
+    
+    function renderMyBooks() {
+        const my = getUserBooks(currentUser().id);
+        if(!my.length) return '<div class="section">У вас нет книг</div>';
+        return `<div class="section"><div class="section-title">📚 Мои книги</div><div class="books-grid">${my.map(book => `<div class="book-card ${book.isVIPAuthor ? 'vip-book-card' : ''}"><div class="book-title">${escapeHtml(book.title)} ${book.isVIPAuthor ? '💎' : ''}</div><div>Статус: ${book.status === 'pending' ? '⏳ На модерации' : book.status === 'approved' ? '✅ Опубликована' : '❌ Отклонена'}</div>
+        ${book.status === 'rejected' ? `<div style="background:#ffe6e6;padding:0.5rem;border-radius:1rem;margin:0.5rem 0"><strong>Отказ:</strong> ${escapeHtml(book.rejectionReason)}<br><strong>Срок:</strong> ${escapeHtml(book.correctionDeadline)}<br><strong>Исправить:</strong> ${escapeHtml(book.correctionNote)}</div>` : ''}
+        <div class="flex-btns">${book.status === 'rejected' ? `<button class="edit-rejected-book btn-outline btn-sm" data-id="${book.id}">✏️ Исправить</button>` : ''}${book.status !== 'approved' ? `<button class="delete-my-book btn-danger btn-sm" data-id="${book.id}">🗑️ Удалить</button>` : ''}</div></div>`).join('')}</div></div>`;
+    }
+    
+    function renderPublishedBooks() {
+        const published = getPublishedBooks();
+        if(!published.length) return '<div class="section">Нет опубликованных книг</div>';
+        return `<div class="section"><div class="section-title">🌟 Опубликованные книги</div><div class="books-grid">${published.map(book => { const author = users.find(u => u.id === book.authorId); const isBookVIP = book.isVIPAuthor || (author && isVIP(author)); return `<div class="book-card ${isBookVIP ? 'vip-book-card' : ''}"><div class="book-title">${escapeHtml(book.title)} ${isBookVIP ? '💎' : ''}</div><div>Автор: ${author ? `${author.firstName} ${author.lastName}` : 'Неизвестен'}</div><div><em>${escapeHtml(book.description.substring(0,100))}...</em></div>
+        <details><summary>📖 Читать</summary><p style="white-space:pre-wrap;">${escapeHtml(book.content.substring(0,800))}${book.content.length > 800 ? '…' : ''}</p></details><small>Опубликовано: ${new Date(book.publishedAt).toLocaleDateString()}</small></div>`}).join('')}</div></div>`;
+    }
+    
+    function renderVipShop() {
+        const user = currentUser();
+        const vipActive = isVIP(user);
+        return `<div class="section"><div class="section-title">💎 VIP Статус</div>${vipActive ? `<div style="background:#e8f0e0; margin-bottom:1rem; padding:0.8rem; border-radius:1rem;">✨ VIP активен до ${new Date(user.vipUntil).toLocaleDateString()}</div>` : '<p>Приобретите VIP для доступа к нейросети и приоритетной модерации:</p>'}
+        <div class="pricing-grid" style="display:flex;flex-wrap:wrap;gap:1rem;">${vipPlans.map((plan, idx) => `<div class="pricing-card" style="background:#fffaf0;border-radius:1.5rem;padding:1rem;flex:1 1 150px;text-align:center;"><div class="price" style="font-size:1.6rem;font-weight:800;color:#b8860b;">${plan.price} бел. руб</div><div><strong>${plan.name}</strong></div><button class="buy-vip-btn" data-plan="${idx}" style="margin-top:0.5rem;">💳 Купить</button></div>`).join('')}</div>
+        <p style="margin-top:1rem;">💳 Тестовая карта: 4242 4242 4242 4242, срок 12/28, CVV 123</p></div>`;
+    }
+    
+    function renderModerationPanel() {
+        const pending = getPendingBooksWithPriority();
+        if(!pending.length) return '<div class="section">Нет книг на модерацию</div>';
+        return `<div class="section"><div class="section-title">⚖️ Модерация (VIP — в приоритете)</div>${pending.map(book => { const author = users.find(u => u.id === book.authorId); const isVipAuthor = isVIP(author); return `<div style="background:#fff8ef;padding:1rem;border-radius:1rem;margin-bottom:1rem;${isVipAuthor ? 'border-left:5px solid gold;' : ''}"><strong>${escapeHtml(book.title)}</strong> ${isVipAuthor ? '💎 VIP-приоритет' : ''}<br>Автор: ${author?.email || 'неизвестен'}<p><em>${escapeHtml(book.description)}</em></p><details><summary>📄 Полный текст</summary><pre style="white-space:pre-wrap;">${escapeHtml(book.content)}</pre></details><div class="flex-btns"><button class="approve-book" data-id="${book.id}">✅ Опубликовать</button><button class="reject-book btn-danger" data-id="${book.id}">❌ Отказать</button></div></div>`}).join('')}</div>`;
+    }
+    
+    function renderSupportPage() {
+        const tickets = getUserTickets();
+        const isAdm = isAdmin();
+        return `<div class="section"><div class="section-title">🛟 Поддержка</div>
+        <div class="form-group"><label>Тема обращения</label><input id="ticketSubject" placeholder="Кратко опишите проблему"></div>
+        <div class="form-group"><label>Сообщение</label><textarea id="ticketMessage" rows="4" placeholder="Опишите подробно..."></textarea></div>
+        <button id="createTicketBtn">📨 Отправить обращение</button>
+        <hr><h3>📋 Ваши обращения</h3>${tickets.length === 0 ? '<p>Нет обращений</p>' : tickets.map(t => `<div class="support-ticket"><strong>${escapeHtml(t.subject)}</strong> <span style="font-size:0.7rem;">(${new Date(t.createdAt).toLocaleString()})</span><p>${escapeHtml(t.message)}</p>${t.reply ? `<div style="background:#e8f0e0;border-radius:0.8rem;padding:0.5rem;margin-top:0.5rem;"><strong>📩 Ответ администратора:</strong><br>${escapeHtml(t.reply)}</div>` : '<em>Ожидает ответа</em>'}${isAdm && !t.reply ? `<button class="reply-ticket-btn btn-outline btn-sm" data-id="${t.id}" style="margin-top:0.5rem;">✏️ Ответить</button>` : ''}</div>`).join('')}</div>`;
+    }
+    
+    function renderAccount() {
+        const user = currentUser();
+        const pendingReq = moderatorRequests.find(r => r.userId === user.id && r.status === 'pending');
+        return `<div class="section"><div class="section-title">👤 Мой аккаунт</div><p><strong>Email:</strong> ${user.email}</p><p><strong>ФИО:</strong> ${user.lastName} ${user.firstName} ${user.middleName}</p><p><strong>Возраст:</strong> ${user.age}</p><p><strong>Роль:</strong> ${user.role} ${isVIP(user) ? '💎 VIP' : ''}</p>
+        ${user.role === 'user' && !pendingReq ? `<button id="requestModeratorBtn" class="btn-outline">⭐ Подать заявку на модератора</button><br><br>` : (user.role === 'user' && pendingReq ? '<p>⏳ Заявка на модератора уже отправлена</p>' : '')}
+        <button id="logoutBtn" class="btn-danger">Выйти</button></div>`;
+    }
+    
+    function renderAdminPanel() {
+        const moderators = users.filter(u => u.role === 'moderator');
+        const pendingReqs = getPendingModeratorRequests();
+        return `<div class="section"><div class="section-title">👑 Админ-панель</div>
+        <h3>📌 Заявки на модераторство</h3>${pendingReqs.length ? pendingReqs.map(req => `<div style="background:#fff1e0;padding:1rem;border-radius:1rem;margin-bottom:1rem;"><strong>${escapeHtml(req.fullName)}</strong> (${req.userEmail})<br>Причина: ${escapeHtml(req.reason)}<div class="flex-btns"><button class="approve-mod-req" data-id="${req.id}">✅ Одобрить</button><button class="reject-mod-req btn-danger" data-id="${req.id}">❌ Отказать</button></div></div>`).join('') : '<p>Нет активных заявок</p>'}
+        <hr><h3>👥 Модераторы и права</h3>${moderators.length ? moderators.map(mod => `<div style="background:#faf6ef;padding:1rem;border-radius:1rem;margin-bottom:1rem;"><strong>${mod.email}</strong> (${mod.firstName} ${mod.lastName})<div style="margin-top:0.8rem;">
+        <div class="permission-toggle"><label>Управление заявками</label><label class="switch"><input type="checkbox" id="perm_modreq_${mod.id}" ${mod.permissions?.canManageModRequests ? 'checked' : ''}><span class="slider"></span></label></div>
+        <div class="permission-toggle"><label>Одобрение/отклонение книг</label><label class="switch"><input type="checkbox" id="perm_approve_${mod.id}" ${mod.permissions?.canApproveRejectBooks ? 'checked' : ''}><span class="slider"></span></label></div>
+        <div class="permission-toggle"><label>Просмотр всех книг</label><label class="switch"><input type="checkbox" id="perm_view_${mod.id}" ${mod.permissions?.canViewAllBooks ? 'checked' : ''}><span class="slider"></span></label></div>
+        <div class="permission-toggle"><label>Публикация книг</label><label class="switch"><input type="checkbox" id="perm_publish_${mod.id}" ${mod.permissions?.canPublishBooks ? 'checked' : ''}><span class="slider"></span></label></div>
+        <div class="flex-btns"><button class="save-permissions-btn btn-outline btn-sm" data-id="${mod.id}">💾 Сохранить права</button><button class="remove-moderator-btn btn-danger btn-sm" data-id="${mod.id}">🗑️ Лишить роли</button></div></div></div>`).join('') : '<p>Нет модераторов</p>'}</div>`;
+    }
+    
+    function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
+    
+    loadData();
+    renderApp();
+</script>
+</body>
+</html>
